@@ -6,9 +6,19 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.waleed.galbums.R
 import com.waleed.galbums.databinding.FragmentAlbumsBinding
+import com.waleed.galbums.ui.activities.main.MainViewModel
+import com.waleed.galbums.ui.fragments.albums.adapters.AlbumsAdapter
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 @AndroidEntryPoint
 class AlbumsFragment : Fragment() {
@@ -16,10 +26,13 @@ class AlbumsFragment : Fragment() {
     private val binding get() = _binding!!
 
     companion object {
+        const val SELECTED_ALBUM_PARAM = "selected-album-param"
         fun newInstance() = AlbumsFragment()
     }
 
     private val viewModel: AlbumsViewModel by viewModels()
+
+    private val mainViewModel: MainViewModel by activityViewModels()
 
 
     override fun onCreateView(
@@ -32,6 +45,24 @@ class AlbumsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initAlbums()
+    }
+
+    private fun initAlbums() = with(binding) {
+        val adapter = AlbumsAdapter {
+            findNavController().navigate(
+                R.id.action_albumsFragment_to_albumDetailFragment, bundleOf(
+                    SELECTED_ALBUM_PARAM to Json.encodeToString(it)
+                )
+            )
+        }
+        recyclerAlbums.adapter = adapter
+
+        lifecycleScope.launch {
+            mainViewModel.albumsData.collectLatest {
+                adapter.submitList(it)
+            }
+        }
     }
 
     override fun onDestroyView() {

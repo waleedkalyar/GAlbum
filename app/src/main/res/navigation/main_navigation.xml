@@ -9,5 +9,14 @@
         android:id="@+id/albumsFragment"
         android:name="com.waleed.galbums.ui.fragments.albums.AlbumsFragment"
         android:label="fragment_albums"
-        tools:layout="@layout/fragment_albums" />
+        tools:layout="@layout/fragment_albums" >
+        <action
+            android:id="@+id/action_albumsFragment_to_albumDetailFragment"
+            app:destination="@id/albumDetailFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/albumDetailFragment"
+        android:name="com.waleed.galbums.ui.fragments.detail.AlbumDetailFragment"
+        android:label="fragment_album_detail"
+        tools:layout="@layout/fragment_album_detail" />
 </navigation>
