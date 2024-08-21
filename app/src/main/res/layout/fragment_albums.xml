@@ -47,7 +47,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/constTopBar"
-        tools:listitem="@layout/item_album"
+        tools:listitem="@layout/item_album_grid"
         tools:itemCount="6"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         app:spanCount="2"/>

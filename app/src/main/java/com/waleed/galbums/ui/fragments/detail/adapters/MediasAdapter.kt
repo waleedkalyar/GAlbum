@@ -19,15 +19,15 @@ class MediasAdapter(private val onMediaItemClick: (mediaItem: GalleryItem) -> Un
     ListAdapter<GalleryItem, MediasAdapter.MediaViewHolder>(object :
         DiffUtil.ItemCallback<GalleryItem>() {
         override fun areItemsTheSame(
-            oldItem:GalleryItem,
-            newItem:GalleryItem
+            oldItem: GalleryItem,
+            newItem: GalleryItem,
         ): Boolean {
             return oldItem.id == newItem.id
         }
 
         override fun areContentsTheSame(
-            oldItem:GalleryItem,
-            newItem:GalleryItem
+            oldItem: GalleryItem,
+            newItem: GalleryItem,
         ): Boolean {
             return oldItem.name == newItem.name
         }
@@ -39,8 +39,8 @@ class MediasAdapter(private val onMediaItemClick: (mediaItem: GalleryItem) -> Un
 
     inner class MediaViewHolder(private val binding: ViewBinding) :
         ViewHolder(binding.root) {
-        fun bind(mediaItem:GalleryItem, type: Int) = with(binding) {
-            if (type == GRID_ITEM) {
+        fun bind(mediaItem: GalleryItem, type: ViewType) = with(binding) {
+            if (type == ViewType.GRID) {
                 (binding as ItemGalleryGridBinding).apply {
                     mediaName.text = mediaItem.name
                     mediaSize.text = mediaItem.size.toFileSize()
@@ -52,7 +52,7 @@ class MediasAdapter(private val onMediaItemClick: (mediaItem: GalleryItem) -> Un
                     if (mediaItem.type == MediaType.IMAGE) ivIcon.setImageResource(R.drawable.ic_photo)
                     else ivIcon.setImageResource(R.drawable.ic_video)
                 }
-            } else if (type == LIST_ITEM) {
+            } else if (type == ViewType.LIST) {
                 (binding as ItemGalleryListBinding).apply {
                     tvName.text = mediaItem.name
                     tvSize.text = mediaItem.size.toFileSize()
@@ -61,7 +61,7 @@ class MediasAdapter(private val onMediaItemClick: (mediaItem: GalleryItem) -> Un
                         .override(200, 200)
                         .into(ivThumb)
 
-                    if (mediaItem.type ==MediaType.IMAGE) ivIcon.setImageResource(R.drawable.ic_photo)
+                    if (mediaItem.type == MediaType.IMAGE) ivIcon.setImageResource(R.drawable.ic_photo)
                     else ivIcon.setImageResource(R.drawable.ic_video)
                 }
             }
@@ -74,7 +74,7 @@ class MediasAdapter(private val onMediaItemClick: (mediaItem: GalleryItem) -> Un
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MediaViewHolder {
         return MediaViewHolder(
-            if (viewType == GRID_ITEM)
+            if (ViewType.entries.toTypedArray()[viewType] == ViewType.GRID)
                 ItemGalleryGridBinding.inflate(
                     LayoutInflater.from(parent.context),
                     parent,
@@ -88,11 +88,11 @@ class MediasAdapter(private val onMediaItemClick: (mediaItem: GalleryItem) -> Un
     }
 
     override fun onBindViewHolder(holder: MediaViewHolder, position: Int) {
-        holder.bind(getItem(position), if (isGrid) 0 else 1)
+        holder.bind(getItem(position), if (isGrid) ViewType.GRID else ViewType.LIST)
     }
 
     override fun getItemViewType(position: Int): Int {
-        return if (isGrid) GRID_ITEM else LIST_ITEM
+        return if (isGrid) ViewType.GRID.ordinal else ViewType.LIST.ordinal
     }
 
     fun switchView() {
@@ -102,8 +102,9 @@ class MediasAdapter(private val onMediaItemClick: (mediaItem: GalleryItem) -> Un
     fun isGrid() = isGrid
 
 
-    companion object {
-        const val GRID_ITEM = 0
-        const val LIST_ITEM = 1
+   enum class ViewType {
+        GRID, LIST
     }
+
+
 }

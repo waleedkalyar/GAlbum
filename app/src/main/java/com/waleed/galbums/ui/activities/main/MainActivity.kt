@@ -1,11 +1,15 @@
 package com.waleed.galbums.ui.activities.main
 
+import android.annotation.SuppressLint
 import android.os.Bundle
+import androidx.activity.addCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.snackbar.Snackbar
 import com.waleed.galbums.R
 import com.waleed.galbums.databinding.ActivityMainBinding
@@ -19,6 +23,8 @@ class MainActivity : AppCompatActivity() {
     private val binding get() = _binding!!
 
     private val viewModel: MainViewModel by viewModels()
+
+    lateinit var navController: NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,6 +43,14 @@ class MainActivity : AppCompatActivity() {
 
     private fun initActivity() {
         initPermissions()
+        initNavController()
+        handleBackPress()
+    }
+
+    private fun initNavController() {
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.mainNavHost) as NavHostFragment
+        navController = navHostFragment.navController
     }
 
     private fun initPermissions() {
@@ -61,4 +75,14 @@ class MainActivity : AppCompatActivity() {
     private fun loadGallery() {
         viewModel.intiAlbums()
     }
+
+
+    private fun handleBackPress() {
+        onBackPressedDispatcher.addCallback {
+            if (navController.popBackStack().not()) {
+                onBackPressedDispatcher.onBackPressed()
+            } else navController.navigateUp()
+        }
+    }
+
 }

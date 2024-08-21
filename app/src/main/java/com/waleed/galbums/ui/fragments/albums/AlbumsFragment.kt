@@ -10,6 +10,8 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.waleed.galbums.R
 import com.waleed.galbums.databinding.FragmentAlbumsBinding
 import com.waleed.galbums.ui.activities.main.MainViewModel
@@ -34,6 +36,8 @@ class AlbumsFragment : Fragment() {
 
     private val mainViewModel: MainViewModel by activityViewModels()
 
+    lateinit var adapter: AlbumsAdapter
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -46,10 +50,30 @@ class AlbumsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initAlbums()
+        initClickListeners()
+    }
+
+    private fun initClickListeners() = with(binding) {
+        btnSwitchView.setOnClickListener {
+            val p = recyclerAlbums.computeVerticalScrollOffset()
+            adapter.switchView()
+            recyclerAlbums.layoutManager =
+                if (adapter.isGrid()) GridLayoutManager(
+                    requireContext(),
+                    2
+                ) else LinearLayoutManager(requireContext())
+
+            if (adapter.isGrid()) btnSwitchView.setImageResource(R.drawable.ic_list) else btnSwitchView.setImageResource(
+                R.drawable.ic_grid
+            )
+            recyclerAlbums.scrollToPosition(p)
+
+
+        }
     }
 
     private fun initAlbums() = with(binding) {
-        val adapter = AlbumsAdapter {
+         adapter = AlbumsAdapter {
             findNavController().navigate(
                 R.id.action_albumsFragment_to_albumDetailFragment, bundleOf(
                     SELECTED_ALBUM_PARAM to Json.encodeToString(it)

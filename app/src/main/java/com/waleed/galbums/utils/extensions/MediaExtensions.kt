@@ -1,5 +1,9 @@
 package com.waleed.galbums.utils.extensions
 
+import android.content.Context
+import android.graphics.drawable.Drawable
+import androidx.core.content.ContextCompat
+import com.waleed.galbums.R
 import java.text.DecimalFormat
 import kotlin.math.log10
 import kotlin.math.pow
@@ -25,3 +29,25 @@ fun <T> MutableList<T>.updateItemPosition(currentPosition: Int, newPosition: Int
 
     return this
 }
+
+fun String.toFolderDrawable(context: Context): Drawable? {
+    var res = 0
+    res = if (this.equals("All Images", true)) {
+        R.drawable.ic_photo_album
+    } else if (this.equals("All Videos", true)) {
+        R.drawable.ic_videos_album
+    } else if (this.contains("Download", true)) {
+        R.drawable.ic_downloads_album
+    } else if (this.contains("Photos", true)) {
+        R.drawable.ic_photo_album
+    } else if (this.contains("Pictures", true)) {
+        R.drawable.ic_photo_album
+    } else if (this.contains("Videos", true)) {
+        R.drawable.ic_photo_album
+    } else R.drawable.ic_folder
+
+    return ContextCompat.getDrawable(context, res)
+}
+
+
+
