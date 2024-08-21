@@ -21,7 +21,7 @@ class MainViewModel @Inject constructor(
 
     fun intiAlbums(){
         viewModelScope.launch {
-            albumsRepo.fetchAlbums().collectLatest {
+            albumsRepo.findAllImageVideoAlbumsFlow().collectLatest {
                 _albumsData.value = it
             }
         }

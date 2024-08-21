@@ -1,6 +1,7 @@
 package com.waleed.galbums.models
 
 import android.net.Uri
+import com.waleed.galbums.models.enums.AlbumCategory
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.descriptors.PrimitiveKind
@@ -37,9 +38,10 @@ object FileSerializer : KSerializer<File> {
 
 @Serializable
 data class Album(
-    val id: String,
-    val name: String,
+    var id: String,
+    var name: String,
     var count: Long = 0,
+    var category: AlbumCategory = AlbumCategory.RANDOM,
 
     @Serializable(with = UriSerializer::class)
     var uri: Uri? = null,

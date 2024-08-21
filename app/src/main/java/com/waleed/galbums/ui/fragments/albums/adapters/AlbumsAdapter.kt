@@ -1,5 +1,6 @@
 package com.waleed.galbums.ui.fragments.albums.adapters
 
+import android.annotation.SuppressLint
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -26,9 +27,10 @@ class AlbumsAdapter(private val onAlbumClick: (album: Album) -> Unit) :
 
 
     inner class AlbumViewHolder(private val binding: ItemAlbumBinding) : ViewHolder(binding.root) {
+        @SuppressLint("SetTextI18n")
         fun bind(album: Album) = with(binding) {
             albumName.text = album.name
-            albumCount.text = album.count.toInt().toString()
+            albumCount.text = "Total ${album.count} items"
 
             Glide.with(root.context).load(album.uri)
                 .override(200, 200)
