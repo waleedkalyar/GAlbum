@@ -2,4 +2,7 @@
     <string name="app_name">GAlbums</string>
     <string name="go_back">Go Back</string>
     <string name="switch_view">Switch View</string>
+    <string name="loading_please_wait">Loading Please wait...</string>
+    <string name="error_msg">Something went wrong, please try again!</string>
+    <string name="retry">Retry</string>
 </resources>

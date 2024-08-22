@@ -1,7 +1,9 @@
 package com.waleed.galbums.ui.fragments.detail.adapters
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
@@ -13,6 +15,7 @@ import com.waleed.galbums.databinding.ItemGalleryListBinding
 import com.waleed.galbums.models.GalleryItem
 import com.waleed.galbums.models.enums.MediaType
 import com.waleed.galbums.utils.extensions.toFileSize
+import com.waleed.galbums.utils.extensions.toMinutesSeconds
 
 
 class MediasAdapter(private val onMediaItemClick: (mediaItem: GalleryItem) -> Unit) :
@@ -39,30 +42,37 @@ class MediasAdapter(private val onMediaItemClick: (mediaItem: GalleryItem) -> Un
 
     inner class MediaViewHolder(private val binding: ViewBinding) :
         ViewHolder(binding.root) {
+        @SuppressLint("SetTextI18n")
         fun bind(mediaItem: GalleryItem, type: ViewType) = with(binding) {
             if (type == ViewType.GRID) {
                 (binding as ItemGalleryGridBinding).apply {
-                    mediaName.text = mediaItem.name
+                    tvDuration.isVisible = mediaItem.type == MediaType.VIDEO
                     mediaSize.text = mediaItem.size.toFileSize()
-
                     Glide.with(root.context).load(mediaItem.uri)
-                        .override(200, 200)
+                        .centerCrop()
                         .into(albumImage)
 
                     if (mediaItem.type == MediaType.IMAGE) ivIcon.setImageResource(R.drawable.ic_photo)
                     else ivIcon.setImageResource(R.drawable.ic_video)
+                    tvDuration.text = mediaItem.duration.toMinutesSeconds()
+
+                    ivIcon.setOnClickListener { root.performClick() }
                 }
             } else if (type == ViewType.LIST) {
                 (binding as ItemGalleryListBinding).apply {
+                    tvDuration.isVisible = mediaItem.type == MediaType.VIDEO
                     tvName.text = mediaItem.name
                     tvSize.text = mediaItem.size.toFileSize()
 
                     Glide.with(root.context).load(mediaItem.uri)
-                        .override(200, 200)
+                        .centerCrop()
                         .into(ivThumb)
 
-                    if (mediaItem.type == MediaType.IMAGE) ivIcon.setImageResource(R.drawable.ic_photo)
+                    if (mediaItem.type == MediaType.IMAGE) ivIcon.setImageResource(R.drawable.ic_photo_large)
                     else ivIcon.setImageResource(R.drawable.ic_video)
+                    tvDuration.text = "•"+mediaItem.duration.toMinutesSeconds()
+
+                    ivIcon.setOnClickListener { root.performClick() }
                 }
             }
             root.setOnClickListener {

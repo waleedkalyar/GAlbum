@@ -1,10 +1,12 @@
 package com.waleed.galbums.utils.extensions
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.drawable.Drawable
 import androidx.core.content.ContextCompat
 import com.waleed.galbums.R
 import java.text.DecimalFormat
+import java.util.Locale
 import kotlin.math.log10
 import kotlin.math.pow
 
@@ -47,6 +49,14 @@ fun String.toFolderDrawable(context: Context): Drawable? {
     } else R.drawable.ic_folder
 
     return ContextCompat.getDrawable(context, res)
+}
+
+@SuppressLint("DefaultLocale")
+fun Long.toMinutesSeconds(): String {
+    val totalSeconds = this / 1000
+    val minutes = (totalSeconds / 60).toInt()
+    val seconds = (totalSeconds % 60).toInt()
+    return String.format("%02d:%02d", minutes, seconds, Locale.getDefault())
 }
 
 

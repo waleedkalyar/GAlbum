@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -16,6 +17,7 @@ import com.waleed.galbums.R
 import com.waleed.galbums.databinding.FragmentAlbumsBinding
 import com.waleed.galbums.ui.activities.main.MainViewModel
 import com.waleed.galbums.ui.fragments.albums.adapters.AlbumsAdapter
+import com.waleed.galbums.utils.sealed.DataResult
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -55,7 +57,7 @@ class AlbumsFragment : Fragment() {
 
     private fun initClickListeners() = with(binding) {
         btnSwitchView.setOnClickListener {
-            val p = recyclerAlbums.computeVerticalScrollOffset()
+            val position = if (adapter.isGrid()) (recyclerAlbums.layoutManager as GridLayoutManager).findFirstVisibleItemPosition() else (recyclerAlbums.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
             adapter.switchView()
             recyclerAlbums.layoutManager =
                 if (adapter.isGrid()) GridLayoutManager(
@@ -66,9 +68,12 @@ class AlbumsFragment : Fragment() {
             if (adapter.isGrid()) btnSwitchView.setImageResource(R.drawable.ic_list) else btnSwitchView.setImageResource(
                 R.drawable.ic_grid
             )
-            recyclerAlbums.scrollToPosition(p)
+            recyclerAlbums.scrollToPosition(position)
 
+        }
 
+        btnRetry.setOnClickListener {
+            mainViewModel.intiAlbums()
         }
     }
 
@@ -84,7 +89,23 @@ class AlbumsFragment : Fragment() {
 
         lifecycleScope.launch {
             mainViewModel.albumsData.collectLatest {
-                adapter.submitList(it)
+                when(it){
+                    is DataResult.Loading -> {
+                        constLoading.isVisible = true
+                        constError.isVisible = false
+                    }
+
+                    is DataResult.Error -> {
+                        constLoading.isVisible = false
+                        constError.isVisible = true
+                    }
+                    is DataResult.Success -> {
+                        constLoading.isVisible = false
+                        constError.isVisible = false
+                        adapter.submitList(it.data)
+                    }
+                }
+
             }
         }
     }

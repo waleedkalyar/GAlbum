@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
@@ -18,6 +19,7 @@ import com.waleed.galbums.models.Album
 import com.waleed.galbums.ui.fragments.albums.AlbumsFragment
 import com.waleed.galbums.ui.fragments.detail.adapters.MediasAdapter
 import com.waleed.galbums.utils.extensions.toSerializable
+import com.waleed.galbums.utils.sealed.DataResult
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -71,8 +73,24 @@ class AlbumDetailFragment : Fragment() {
         lifecycleScope.launch {
             viewModel.albumContent
                 .collectLatest {
-                    binding.albumDetailRecycler.adapter = adapter
-                    adapter.submitList(it)
+                    when(it){
+                        is DataResult.Loading -> {
+                            constLoading.isVisible = true
+                            constError.isVisible = false
+                        }
+
+                        is DataResult.Error -> {
+                           constLoading.isVisible = false
+                           constError.isVisible = true
+                        }
+                        is DataResult.Success -> {
+                            constLoading.isVisible = false
+                            constError.isVisible = false
+                            albumDetailRecycler.adapter = adapter
+                            adapter.submitList(it.data)
+                        }
+                    }
+
                 }
         }
     }
@@ -82,7 +100,7 @@ class AlbumDetailFragment : Fragment() {
             findNavController().navigateUp()
         }
         btnSwitchView.setOnClickListener {
-            val p = albumDetailRecycler.computeVerticalScrollOffset()
+            val position = if (adapter.isGrid()) (albumDetailRecycler.layoutManager as GridLayoutManager).findFirstVisibleItemPosition() else (albumDetailRecycler.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
             adapter.switchView()
             albumDetailRecycler.layoutManager =
                 if (adapter.isGrid()) GridLayoutManager(
@@ -93,9 +111,11 @@ class AlbumDetailFragment : Fragment() {
             if (adapter.isGrid()) btnSwitchView.setImageResource(R.drawable.ic_list) else btnSwitchView.setImageResource(
                 R.drawable.ic_grid
             )
-            albumDetailRecycler.scrollToPosition(p)
+            albumDetailRecycler.scrollToPosition(position)
+        }
 
-
+        btnRetry.setOnClickListener {
+            viewModel.fetchAlbumContentById()
         }
     }
 

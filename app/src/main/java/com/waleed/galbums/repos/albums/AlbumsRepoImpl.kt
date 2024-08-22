@@ -3,6 +3,7 @@ package com.waleed.galbums.repos.albums
 import com.waleed.galbums.datasources.gallery.GalleryDataSource
 import com.waleed.galbums.models.Album
 import com.waleed.galbums.models.GalleryItem
+import com.waleed.galbums.utils.sealed.DataResult
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
@@ -25,11 +26,11 @@ class AlbumsRepoImpl @Inject constructor(
       return gDataSource.findVideosByAlbumId(albumId)
     }
 
-    override fun findAllImageVideoAlbumsFlow(): Flow<List<Album>> {
+    override fun findAllImageVideoAlbumsFlow(): Flow<DataResult<List<Album>>> {
       return gDataSource.findAllImageVideoAlbumsFlow()
     }
 
-    override fun findImageVideosByBucketIdFlow(albumId: String): Flow<List<GalleryItem>> {
+    override fun findImageVideosByBucketIdFlow(albumId: String): Flow<DataResult<List<GalleryItem>>> {
       return gDataSource.findImageVideosByBucketIdFlow(albumId)
     }
 
