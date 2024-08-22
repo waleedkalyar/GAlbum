@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity() {
 
     private val viewModel: MainViewModel by viewModels()
 
-    lateinit var navController: NavController
+   private lateinit var navController: NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,12 +61,9 @@ class MainActivity : AppCompatActivity() {
                 val snack = Snackbar.make(
                     this,
                     binding.root,
-                    "Please Grant permissions to view Gallery",
+                    "Sorry, Permissions are not granted to show gallery",
                     Snackbar.LENGTH_SHORT
                 )
-                snack.setAction("Grant Permissions") {
-                    initPermissions()
-                }
                 snack.show()
             }
         } else loadGallery()

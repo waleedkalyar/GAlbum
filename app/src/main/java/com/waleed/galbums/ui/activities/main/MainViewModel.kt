@@ -18,7 +18,7 @@ class MainViewModel @Inject constructor(
     private val albumsRepo: AlbumsRepo,
 ) : ViewModel() {
 
-    private val _albumsData = MutableStateFlow<DataResult<List<Album>>>(DataResult.Loading())
+    private val _albumsData = MutableStateFlow<DataResult<List<Album>>>(DataResult.Success(emptyList()))
     val albumsData = _albumsData.asStateFlow()
 
     fun intiAlbums() {
