@@ -7,7 +7,8 @@ on:
     branches: [ "main" ]
 
 permissions:
-  contents: write  # ✅ Allow creating releases
+  contents: write   # needed for GitHub Releases
+  packages: write   # needed for GitHub Packages
 
 jobs:
   build:
@@ -39,10 +40,19 @@ jobs:
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v2
       with:
-        tag_name: v1.0.${{ github.run_number }}
+        tag_name: debug-v1.0.${{ github.run_number }}
         name: "Debug Build v1.0.${{ github.run_number }}"
         draft: false
         prerelease: true
         files: app/build/outputs/apk/debug/app-debug.apk
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Publish APK to GitHub Packages
+      run: |
+        curl \
+          -X POST \
+          -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+          -H "Content-Type: application/octet-stream" \
+          --data-binary @app/build/outputs/apk/debug/app-debug.apk \
+          "https://uploads.github.com/repos/${{ github.repository }}/packages/assets?name=app-debug-${{ github.run_number }}.apk&label=Debug+APK"
